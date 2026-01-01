@@ -97,13 +97,7 @@ export default function AdminUserMng() {
       ),
   });
   const columns = [
-    {
-      title: "ID",
-      dataIndex: "id",
-      key: "id",
-      sorter: (a, b) => a.id - b.id,
-      sortDirections: ["descend", "ascend"],
-    },
+   
     {
       title: "Avatar",
       dataIndex: "avatar",

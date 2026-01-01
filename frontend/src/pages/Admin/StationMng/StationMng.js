@@ -103,19 +103,10 @@ export default function StationMng() {
   });
   const columns = [
     {
-      title: 'Station ID',
-      dataIndex: 'id',
-      key: 'id',
-      width: '15%',
-      ...getColumnSearchProps('id'),
-      sorter: (a, b) => a.id - b.id,
-      sortDirections: ['descend', 'ascend'],
-    },
-    {
       title: 'Station Name',
       dataIndex: 'name',
       key: 'name',
-      width: '25%',
+      width: '35%',
       ...getColumnSearchProps('name'),
       sorter: (a, b) => a.name - b.name,
       sortDirections: ['descend', 'ascend'],
@@ -124,7 +115,7 @@ export default function StationMng() {
       title: 'Address',
       dataIndex: 'address',
       key: 'address',
-      width: '30%',
+      width: '40%',
       ...getColumnSearchProps('address'),
       sortDirections: ['descend', 'ascend']
     },

@@ -29,13 +29,13 @@ export default function AddNewTrip(props) {
   }, [dispatch]);
   const formik = useFormik({
     initialValues: {
-      startTime: '',
-      finishTime: '',
-      ticketPrice: '',
-      busId: '',
-      driverId: '',
-      fromStationId: '',
-      toStationId: '',
+      StartTime: '',
+      FinishTime: '',
+      TicketPrice: '',
+      BusId: '',
+      DriverId: '',
+      FromStationId: '',
+      ToStationId: '',
     },
     onSubmit: async (values) => {
 
@@ -54,23 +54,23 @@ export default function AddNewTrip(props) {
 
 
   const handleChangeBus = (value) => {
-    formik.setFieldValue('busId', value)
+    formik.setFieldValue('BusId', value)
   }
   const handleChangeFromStation = (value, data) => {
-    formik.setFieldValue('fromStationId', value)
+    formik.setFieldValue('FromStationId', value)
   };
   const handleChangeToStation = (value, data) => {
-    formik.setFieldValue('toStationId', value)
+    formik.setFieldValue('ToStationId', value)
   };
 
   const handleChangeDriver = (value) => {
-    formik.setFieldValue('driverId', value)
+    formik.setFieldValue('DriverId', value)
 
   };
 
   const onChangeDate = (value) => {
-    formik.setFieldValue('startTime', value[0]);
-    formik.setFieldValue('finishTime', value[1]);
+    formik.setFieldValue('StartTime', value[0]);
+    formik.setFieldValue('FinishTime', value[1]);
     setArrDriverNew(arrDriver.filter((item) =>
       item.trips.filter((item2) => ((dayjs(item2.startTime).isBetween(dayjs(value[0]), dayjs(value[1]))
         || dayjs(item2.finishTime).isBetween(dayjs(value[0]), dayjs(value[1]))))).length > 0 ? false : true))
@@ -80,8 +80,8 @@ export default function AddNewTrip(props) {
   };
 
   const onOk = (value) => {
-    formik.setFieldValue('startTime', value[0]);
-    formik.setFieldValue('finishTime', value[1]);
+    formik.setFieldValue('StartTime', value[0]);
+    formik.setFieldValue('FinishTime', value[1]);
     setArrDriverNew(arrDriver.filter((item) =>
       item.trips.filter((item2) => ((dayjs(item2.startTime).isBetween(dayjs(value[0]), dayjs(value[1]))
         || dayjs(item2.finishTime).isBetween(dayjs(value[0]), dayjs(value[1]))))).length > 0 ? false : true))
@@ -151,7 +151,7 @@ export default function AddNewTrip(props) {
             },
           ]}
         >
-          <Input name="ticketPrice" type='number' prefix={"$"} onChange={formik.handleChange} />
+          <Input name="TicketPrice" type='number' prefix={"₱"} onChange={formik.handleChange} />
         </Form.Item>
 
         <Form.Item

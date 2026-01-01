@@ -104,19 +104,10 @@ export default function BusTypeMng() {
   });
   const columns = [
     {
-      title: 'Type ID',
-      dataIndex: 'id',
-      key: 'id',
-      width: '15%',
-      ...getColumnSearchProps('id'),
-      sorter: (a, b) => a.id - b.id,
-      sortDirections: ['descend', 'ascend'],
-    },
-    {
       title: 'Bus Type',
       dataIndex: 'name',
       key: 'name',
-      width: '15%',
+      width: '30%',
       ...getColumnSearchProps('name'),
       sorter: (a, b) => a.name - b.name,
       sortDirections: ['descend', 'ascend'],
@@ -125,7 +116,7 @@ export default function BusTypeMng() {
       title: 'Number Of Seat',
       dataIndex: 'numberOfSeat',
       key: 'numberOfSeat',
-      width: '30%',
+      width: '45%',
       ...getColumnSearchProps('numberOfSeat'),
       sortDirections: ['descend', 'ascend']
     },

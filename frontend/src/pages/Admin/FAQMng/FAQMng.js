@@ -104,14 +104,7 @@ export default function FAQMng() {
       ),
   });
   const columns = [
-    {
-      title: 'Id',
-      dataIndex: 'id',
-      key: 'id',
-      width: '5%',
-      sorter: (a, b) => a.id - b.id,
-      sortDirections: ['descend', 'ascend'],
-    },
+   
     {
       title: 'Question',
       dataIndex: 'question',

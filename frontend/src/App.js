@@ -71,6 +71,7 @@ import OfferMng from "./pages/Admin/OfferMng/OfferMng";
 import AddOffer from "./pages/Admin/OfferMng/AddOffer";
 import OfferEdit from "./pages/Admin/OfferMng/OfferEdit";
 
+
 export const history = createBrowserHistory();
 
 function App() {

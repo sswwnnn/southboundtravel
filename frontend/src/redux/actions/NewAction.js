@@ -9,9 +9,17 @@ export const getListNewsAction = () => {
     try {
       const result = await newService.getListNews();
       if (result.data.status === 200) {
+        const newsArray = result.data.data;
+        const chunkedNews = [];
+        const chunkSize = 4; 
+        
+        for (let i = 0; i < newsArray.length; i += chunkSize) {
+          chunkedNews.push(newsArray.slice(i, i + chunkSize));
+        }
         dispatch({
           type: GET_NEWS_LIST,
-          arrNews: result.data.data
+          arrNews: newsArray, // Store flat array for table
+          arrNewsChunked: chunkedNews // Store chunked array for homepage
         });
       }
     } catch (error) {

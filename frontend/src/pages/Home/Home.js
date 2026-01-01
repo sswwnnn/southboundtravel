@@ -7,6 +7,7 @@ import PopularRoute from "../../components/PopularRoute/PopularRoute";
 import Information from "../../components/Information/Information";
 import Faqs from "../../components/FAQs/Faqs";
 import Offer from "../../components/Offer/Offer";
+import News from "../../components/News/News";
 import './Home.css';
 
 export default function Home(props) {
@@ -15,7 +16,7 @@ export default function Home(props) {
   const btnRef = useRef();
 
   useEffect(() => {
-    // dispatch(layDanhSachPhimAction());
+ 
   }, []);
 
   useEffect(() => {
@@ -57,10 +58,13 @@ export default function Home(props) {
           <PopularRoute />
 
           <Offer />
-          
-          <Information />
+
+          <News />
 
           <Faqs />
+
+          <Information />
+
         </div>
       </div>
     </div>

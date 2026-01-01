@@ -1,8 +1,9 @@
 import React, { Fragment, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Button, Form, Input, Tabs, InputNumber, notification, Timeline } from 'antd';
-import { UserOutlined, HomeOutlined, CreditCardOutlined, KeyOutlined } from '@ant-design/icons';
+import { Button, Form, Input, Tabs, InputNumber, notification, Timeline, Upload, Modal } from 'antd';
+import { UserOutlined, HomeOutlined, CreditCardOutlined, KeyOutlined, UploadOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import './Detail.css'
+import './IdVerification.css' 
 import { CHUYEN_TAB_ACTIVE } from '../../redux/constants';
 import _ from 'lodash';
 import { TOKEN } from '../../util/settings/config';
@@ -81,16 +82,28 @@ export function SettlePayment(props) {
     const [students, setStudents] = useState(0);
     const [senior, setSenior] = useState(0);
     let [voucherDiscount, setVvoucherDiscount] = useState(0);
+    
+    // id verification states
+    const [childrenFiles, setChildrenFiles] = useState([]);
+    const [studentsFiles, setStudentsFiles] = useState([]);
+    const [seniorFiles, setSeniorFiles] = useState([]);
+    const [showIdInfo, setShowIdInfo] = useState(false);
 
     const handleChangeChildren = (value) => {
-        setChildren(value)
+        setChildren(value);
+        if (value === 0) setChildrenFiles([]);
     }
+    
     const handleChangeStudents = (value) => {
-        setStudents(value)
+        setStudents(value);
+        if (value === 0) setStudentsFiles([]);
     }
+    
     const handleChangeSenior = (value) => {
-        setSenior(value)
+        setSenior(value);
+        if (value === 0) setSeniorFiles([]);
     }
+
     const totalTicket = donHang && donHang?.numberOfSeat - children - students - senior;
     const totalPrice = donHang && donHang?.totalMoney;
     const discount = donHang && children * donHang?.ticketPrice + students * donHang?.ticketPrice * 0.2 + senior * donHang?.ticketPrice * 0.2
@@ -106,9 +119,62 @@ export function SettlePayment(props) {
         voucherDiscount = -1;
     }
 
-    
-
     const finalPrice = voucherDiscount > 0 ? priceBeforeVoucher - voucherDiscount : priceBeforeVoucher;
+
+    // file upload handlers
+    const uploadProps = (fileList, setFileList, category) => ({
+        beforeUpload: (file) => {
+            const isImage = file.type.startsWith('image/') || file.type === 'application/pdf';
+            if (!isImage) {
+                notification.error({
+                    message: 'Invalid File Type',
+                    description: 'You can only upload image or PDF files!',
+                });
+                return Upload.LIST_IGNORE;
+            }
+            const isLt5M = file.size / 1024 / 1024 < 5;
+            if (!isLt5M) {
+                notification.error({
+                    message: 'File Too Large',
+                    description: 'File must be smaller than 5MB!',
+                });
+                return Upload.LIST_IGNORE;
+            }
+            return false;
+        },
+        onChange: ({ fileList: newFileList }) => {
+            setFileList(newFileList);
+        },
+        fileList: fileList,
+        maxCount: 2,
+        multiple: true,
+        accept: 'image/*,.pdf'
+    });
+
+    const validateIdUploads = () => {
+        if (children > 0 && childrenFiles.length === 0) {
+            notification.error({
+                message: 'ID Verification Required',
+                description: 'Please upload birth certificate or parent/guardian declaration for children discount.',
+            });
+            return false;
+        }
+        if (students > 0 && studentsFiles.length === 0) {
+            notification.error({
+                message: 'ID Verification Required',
+                description: 'Please upload valid School ID or enrollment certificate for student discount.',
+            });
+            return false;
+        }
+        if (senior > 0 && seniorFiles.length === 0) {
+            notification.error({
+                message: 'ID Verification Required',
+                description: 'Please upload valid PWD ID or Senior Citizen ID for discount.',
+            });
+            return false;
+        }
+        return true;
+    };
 
     const onFinish = (values) => {
         if (children == donHang?.numberOfSeat) {
@@ -122,10 +188,11 @@ export function SettlePayment(props) {
                     </>
                 ),
             });
+        } else if (!validateIdUploads()) {
+            return;
         } else {
             setShow(true)
         }
-
     };
 
     const checkDiscount = (values) => {
@@ -164,17 +231,160 @@ export function SettlePayment(props) {
     };
 
     const dispatch = useDispatch();
+    
     return (
         <div className='container min-h-screen mt-2'>
+            {}
+            <Modal
+                title={<><InfoCircleOutlined className="mr-2" />ID Verification Requirements</>}
+                open={showIdInfo}
+                onCancel={() => setShowIdInfo(false)}
+                footer={[
+                    <Button key="close" type="primary" onClick={() => setShowIdInfo(false)}>
+                        Got it
+                    </Button>
+                ]}
+                width={700}
+            >
+                <div className="id-requirements-modal">
+                    <h4>Required Documents for Discount Eligibility:</h4>
+                    
+                    <div className="requirement-section">
+                        <h5>Under 5 years old (100% discount)</h5>
+                        <ul>
+                            <li>Birth Certificate, or</li>
+                            <li>Parent/Guardian declaration form (available at ticket counter)</li>
+                        </ul>
+                        <p className="note">Note: Age is verified at the ticket counter before boarding</p>
+                    </div>
+
+                    <div className="requirement-section">
+                        <h5>Students (20% discount)</h5>
+                        <ul>
+                            <li>Valid School ID (current school year), or</li>
+                            <li>Official Enrollment Certificate or Certificate of Registration</li>
+                        </ul>
+                        <p className="note">Note: ID must be current and not expired</p>
+                    </div>
+
+                    <div className="requirement-section">
+                        <h5>PWD/Senior Citizen (20% discount)</h5>
+                        <ul>
+                            <li><strong>For PWD:</strong> PWD ID issued by DSWD or local government unit</li>
+                            <li><strong>For Senior Citizens:</strong> Senior Citizen ID issued by OSCA or local government unit</li>
+                        </ul>
+                        <p className="note">Note: Valid government-issued ID required</p>
+                    </div>
+
+                    <div className="upload-tips">
+                        <h5>Upload Tips:</h5>
+                        <ul>
+                            <li>Accepted formats: JPG, PNG, PDF (Max 5MB per file)</li>
+                            <li>Ensure ID/document is clearly visible</li>
+                            <li>You can upload up to 2 files per category</li>
+                            <li>Documents will be verified before boarding</li>
+                        </ul>
+                    </div>
+                </div>
+            </Modal>
+
             <div className="row alert alert-primary" role="alert">
-                Please enter the number of passengers according to the classification below to receive discount:
+                <div className="d-flex justify-between align-items-center">
+                    <div>Please enter the number of passengers according to the classification below to receive discount:</div>
+                    <Button 
+                        type="link" 
+                        icon={<InfoCircleOutlined />} 
+                        onClick={() => setShowIdInfo(true)}
+                        className="id-info-button"
+                    >
+                        View ID Requirements
+                    </Button>
+                </div>
                 <div className='w-full mt-3 mx-5'><b>Number of unclassified tickets: {totalTicket}</b></div>
-                <ul className='d-flex justify-between mx-5'>
-                    <li className="my-1"><i className="fa-solid fa-person fa-lg mr-2"></i>Under 5 years old (discount 100%): <InputNumber addonBefore={<UserOutlined />} onChange={handleChangeChildren} name="children" min={0} max={donHang?.numberOfSeat - students - senior} className="p-2" type="number" /></li>
-                    <li className="my-1"><i className="fa-solid fa-person fa-lg mr-2"></i>Students (discount 20%): <InputNumber addonBefore={<UserOutlined />} onChange={handleChangeStudents} name="students" min={0} max={donHang?.numberOfSeat - children - senior} className="p-2" type="number" /></li>
-                    <li className="my-1"><i className="fa-solid fa-person fa-lg mr-2"></i>PWD/Senior Citizen (discount 20%): <InputNumber addonBefore={<UserOutlined />} onChange={handleChangeSenior} name="senior" min={0} max={donHang?.numberOfSeat - children - students} className="p-2" type="number" /></li>
-                </ul>
-                <div><small className='text-gray-700'>(*) Unclassified ticket will be considered as a normal ticket with no discount.</small></div>
+                <div className='discount-categories mx-5'>
+                    {/* Children Category */}
+                    <div className="discount-item">
+                        <div className="discount-header">
+                            <i className="fa-solid fa-person fa-lg mr-2"></i>
+                            <span>Under 5 years old (discount 100%):</span>
+                        </div>
+                        <InputNumber 
+                            addonBefore={<UserOutlined />} 
+                            onChange={handleChangeChildren} 
+                            name="children" 
+                            min={0} 
+                            max={donHang?.numberOfSeat - students - senior} 
+                            className="p-2" 
+                            type="number" 
+                        />
+                        {children > 0 && (
+                            <div className="id-upload-section">
+                                <Upload {...uploadProps(childrenFiles, setChildrenFiles, 'children')}>
+                                    <Button icon={<UploadOutlined />} className="upload-button">
+                                        Upload Birth Cert./Declaration {childrenFiles.length > 0 && `(${childrenFiles.length})`}
+                                    </Button>
+                                </Upload>
+                                <small className="upload-hint">Required: Birth certificate or parent/guardian declaration</small>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Students Category */}
+                    <div className="discount-item">
+                        <div className="discount-header">
+                            <i className="fa-solid fa-person fa-lg mr-2"></i>
+                            <span>Students (discount 20%):</span>
+                        </div>
+                        <InputNumber 
+                            addonBefore={<UserOutlined />} 
+                            onChange={handleChangeStudents} 
+                            name="students" 
+                            min={0} 
+                            max={donHang?.numberOfSeat - children - senior} 
+                            className="p-2" 
+                            type="number" 
+                        />
+                        {students > 0 && (
+                            <div className="id-upload-section">
+                                <Upload {...uploadProps(studentsFiles, setStudentsFiles, 'students')}>
+                                    <Button icon={<UploadOutlined />} className="upload-button">
+                                        Upload School ID/Certificate {studentsFiles.length > 0 && `(${studentsFiles.length})`}
+                                    </Button>
+                                </Upload>
+                                <small className="upload-hint">Required: Valid school ID or enrollment certificate</small>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* PWD/Senior Citizen Category */}
+                    <div className="discount-item">
+                        <div className="discount-header">
+                            <i className="fa-solid fa-person fa-lg mr-2"></i>
+                            <span>PWD/Senior Citizen (discount 20%):</span>
+                        </div>
+                        <InputNumber 
+                            addonBefore={<UserOutlined />} 
+                            onChange={handleChangeSenior} 
+                            name="senior" 
+                            min={0} 
+                            max={donHang?.numberOfSeat - children - students} 
+                            className="p-2" 
+                            type="number" 
+                        />
+                        {senior > 0 && (
+                            <div className="id-upload-section">
+                                <Upload {...uploadProps(seniorFiles, setSeniorFiles, 'senior')}>
+                                    <Button icon={<UploadOutlined />} className="upload-button">
+                                        Upload PWD/Senior Citizen ID {seniorFiles.length > 0 && `(${seniorFiles.length})`}
+                                    </Button>
+                                </Upload>
+                                <small className="upload-hint">Required: Valid PWD or Senior Citizen ID</small>
+                            </div>
+                        )}
+                    </div>
+                </div>
+                
+                <div><small className='text-gray-700'>(*) ID verification is mandatory for all discounted tickets. Documents will be checked before boarding.</small></div>
             </div>
             <div className='row'>
                 <div className='col-6 w-full alert alert-light' style={{ height: 540 }}>

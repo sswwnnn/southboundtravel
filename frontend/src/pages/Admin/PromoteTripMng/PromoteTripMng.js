@@ -105,15 +105,6 @@ export default function PromoteTripMng() {
   });
   const columns = [
     {
-      title: 'ID',
-      dataIndex: 'id',
-      key: 'id',
-      width: '15%',
-      ...getColumnSearchProps('id'),
-      sorter: (a, b) => a.id - b.id,
-      sortDirections: ['descend', 'ascend'],
-    },
-    {
       title: "Image",
       dataIndex: "image",
       key: "image",

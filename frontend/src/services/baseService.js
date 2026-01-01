@@ -2,7 +2,7 @@ import Axios from "axios"
 import {DOMAIN,TOKEN} from '../util/settings/config'
 
 export class baseService {
-    //put json về phía backend
+   
     put = (url,model) => {
         return  Axios({
             url:`${DOMAIN}${url}`,

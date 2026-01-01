@@ -102,13 +102,7 @@ export default function DriverMng() {
       ),
   });
   const columns = [
-    {
-      title: "ID",
-      dataIndex: "id",
-      key: "id",
-      sorter: (a, b) => a.id.length - b.id.length,
-      sortDirections: ["descend", "ascend"],
-    },
+    
     {
       title: "Avatar",
       dataIndex: "avatar",

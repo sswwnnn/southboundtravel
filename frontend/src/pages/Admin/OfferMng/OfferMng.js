@@ -107,13 +107,7 @@ export default function OfferMng() {
       ),
   });
   const columns = [
-    {
-      title: 'Id',
-      dataIndex: 'id',
-      key: 'id',
-      sorter: (a, b) => a.id - b.id,
-      sortDirections: ['descend', 'ascend'],
-    },
+   
     {
       title: 'Offer Code',
       dataIndex: 'offerCode',

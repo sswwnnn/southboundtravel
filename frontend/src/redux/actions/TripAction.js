@@ -16,9 +16,15 @@ export const getTripListAction = () => {
       }
     } catch (error) {
       console.log("error", error);
+      notification.error({
+        closeIcon: true,
+        message: "Error",
+        description: <>Failed to load trips.</>,
+      });
     }
   };
 };
+
 export const getTripListByDriverId = (Id) => {
   return async (dispatch) => {
     try {
@@ -31,6 +37,11 @@ export const getTripListByDriverId = (Id) => {
       }
     } catch (error) {
       console.log("error", error);
+      notification.error({
+        closeIcon: true,
+        message: "Error",
+        description: <>Failed to load driver trips.</>,
+      });
     }
   };
 };
@@ -47,6 +58,11 @@ export const getTripByIdAction = (id) => {
       }
     } catch (error) {
       console.log("error", error);
+      notification.error({
+        closeIcon: true,
+        message: "Error",
+        description: <>Failed to load trip details.</>,
+      });
     }
   };
 };
@@ -54,14 +70,20 @@ export const getTripByIdAction = (id) => {
 export const addNewTripAction = (formData) => {
   return async (dispatch) => {
     try {
+      dispatch(displayLoadingAction);
       const result = await tripService.addNewTrip(formData);
-      notification.success({
-        closeIcon: true,
-        message: "Success",
-        description: <>Added successfully.</>,
-      });
-      history.push("/admin/tripmng");
+      
+      if (result.data.status === 200 || result.data.status === 201) {
+        notification.success({
+          closeIcon: true,
+          message: "Success",
+          description: <>Added successfully.</>,
+        });
+        await dispatch(hideLoadingAction);
+        history.push("/admin/tripmng");
+      }
     } catch (error) {
+      await dispatch(hideLoadingAction);
       notification.error({
         closeIcon: true,
         message: "Error",
@@ -75,33 +97,53 @@ export const addNewTripAction = (formData) => {
 export const updateTripAction = (id, formData) => {
   return async (dispatch) => {
     try {
+      dispatch(displayLoadingAction);
+      
+  
+      console.log('Update Trip - ID:', id);
+      console.log('Update Trip - FormData/Payload:', formData);
+      
       const result = await tripService.updateTrip(id, formData);
-      notification.success({
-        closeIcon: true,
-        message: 'Success',
-        description: (
-          <>Updated successfully</>
-        ),
-      });
-      history.push('/admin/tripmng');
+      
+      if (result.data.status === 200) {
+        notification.success({
+          closeIcon: true,
+          message: 'Success',
+          description: <>Updated successfully</>,
+        });
+        await dispatch(hideLoadingAction);
+        history.push('/admin/tripmng');
+      }
     } catch (error) {
-      console.log('error', error);
+      await dispatch(hideLoadingAction);
+      console.log('Update trip error:', error);
+      console.log('Error response:', error.response?.data);
+      notification.error({
+        closeIcon: true,
+        message: 'Error',
+        description: <>Failed to update trip. Please try again.</>,
+      });
     }
-  }
-}
+  };
+};
 
 export const deleteTripAction = (id) => {
   return async (dispatch) => {
     try {
+      dispatch(displayLoadingAction);
       const result = await tripService.deleteTrip(id);
+      
       if (result.data.status === 200) {
         notification.success({
           closeIcon: true,
           message: "Success",
           description: <>Deleted successfully</>,
         });
+        await dispatch(hideLoadingAction);
+   
         dispatch(getTripListAction());
-      }else{
+      } else {
+        await dispatch(hideLoadingAction);
         notification.error({
           closeIcon: true,
           message: "Error",
@@ -109,20 +151,23 @@ export const deleteTripAction = (id) => {
         });
       }
     } catch (error) {
+      await dispatch(hideLoadingAction);
       console.log("error", error);
       notification.error({
         closeIcon: true,
         message: "Error",
-        description: <>Cannot delete trip</>,
+        description: <>Cannot delete trip. It may be in use.</>,
       });
     }
   };
 };
+
 export const getTripListOptionsAction = (options) => {
   return async (dispatch) => {
     try {
       dispatch(displayLoadingAction);
       const result = await tripService.getTripListOptions(options);
+      
       if (result.data.status === 200) {
         dispatch({
           type: GET_TRIP_LIST,
@@ -131,7 +176,13 @@ export const getTripListOptionsAction = (options) => {
         await dispatch(hideLoadingAction);
       }
     } catch (error) {
+      await dispatch(hideLoadingAction);
       console.log("error", error);
+      notification.error({
+        closeIcon: true,
+        message: "Error",
+        description: <>Failed to load trip options.</>,
+      });
     }
   };
 };

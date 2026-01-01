@@ -50,7 +50,7 @@ export default function NewsDetail(props) {
           }
     }
 })
-  //Phan trang
+ 
   const [currentPage, setCurrentPage] = useState(1);
   const [form] = Form.useForm();
   const [postsPerPage] = useState(5);

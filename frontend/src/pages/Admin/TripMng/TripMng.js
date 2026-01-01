@@ -115,19 +115,10 @@ export default function TripMng() {
 
   const columns = [
     {
-      title: 'Id',
-      dataIndex: 'id',
-      key: 'id',
-      sorter: (a, b) => a.id - b.id,
-      sortDirections: ['descend', 'ascend'],
-      render: (text, item) => {
-        return <span color="magenta">{item.id}</span>
-      },
-    },
-    {
       title: 'Image',
       dataIndex: 'image',
       key: 'image',
+      width: '8%',
       sortDirections: ['descend', 'ascend'],
       render: (text, item, index) => {
         return item.image != "null" || item.image != null
@@ -139,6 +130,7 @@ export default function TripMng() {
       title: 'From Station',
       dataIndex: 'fromStation',
       key: 'fromStation',
+      width: '12%',
       sorter: (a, b) => a.fromStation.name.length - b.fromStation.name.length,
       sortDirections: ['descend', 'ascend'],
       render: (text, item) => {
@@ -149,6 +141,7 @@ export default function TripMng() {
       title: 'To Station',
       dataIndex: 'toStation',
       key: 'toStation',
+      width: '12%',
       sorter: (a, b) => a.toStation.name.length - b.toStation.name.length,
       sortDirections: ['descend', 'ascend'],
       render: (text, item) => {
@@ -159,6 +152,7 @@ export default function TripMng() {
       title: 'Start Time',
       dataIndex: 'startTime',
       key: 'startTime',
+      width: '13%',
       sorter: (a, b) => dayjs(a.startTime) - dayjs(b.startTime),
       render: (text, item) => {
         return dayjs(item.startTime).format("DD-MM-YYYY h:mm A")
@@ -168,6 +162,7 @@ export default function TripMng() {
       title: 'Finish Time',
       dataIndex: 'finishTime',
       key: 'finishTime',
+      width: '13%',
       sorter: (a, b) => dayjs(a.finishTime) - dayjs(b.finishTime),
       render: (text, item) => {
         return dayjs(item.finishTime).format("DD-MM-YYYY h:mm A")
@@ -177,12 +172,14 @@ export default function TripMng() {
       title: 'Ticket Price',
       dataIndex: 'ticketPrice',
       key: 'ticketPrice',
+      width: '10%',
       sorter: (a, b) => dayjs(a.ticketPrice) - dayjs(b.ticketPrice),
     },
     {
       title: 'Assigned Driver',
       dataIndex: 'driver',
       key: 'driver',
+      width: '12%',
       sorter: (a, b) => a.driver - b.driver,
       sortDirections: ['descend', 'ascend'],
       render: (text, item) => {
@@ -193,6 +190,7 @@ export default function TripMng() {
       title: 'Assigned Bus',
       dataIndex: 'bus',
       key: 'bus',
+      width: '10%',
       sorter: (a, b) => a.bus.length - b.bus.length,
       sortDirections: ['descend', 'ascend'],
       render: (text, item) => {
@@ -201,6 +199,7 @@ export default function TripMng() {
     },
     {
       title: 'Action',
+      width: '10%',
       render: (text, trip) => {
         return <div className="d-flex">
           <Button key={1} onClick={() => {

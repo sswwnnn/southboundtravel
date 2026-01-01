@@ -4,7 +4,7 @@ import { Button, Input, Space, Table } from 'antd';
 import { useRef, useState } from 'react';
 import Highlighter from 'react-highlight-words';
 import { useDispatch, useSelector } from 'react-redux';
-import { getListNewsAction,deleteNewsAction } from '../../../redux/actions/NewAction';
+import { getListNewsAction, deleteNewsAction } from '../../../redux/actions/NewAction';
 import { DOMAIN } from '../../../util/settings/config';
 import dayjs from 'dayjs';
 
@@ -84,13 +84,13 @@ export default function NewsMng() {
       />
     ),
     onFilter: (value, record) =>
-      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+      record[dataIndex]?.toString().toLowerCase().includes(value.toLowerCase()) || false,
     onFilterDropdownOpenChange: (visible) => {
       if (visible) {
         setTimeout(() => searchInput.current?.select(), 100);
       }
     },
-    render: (text, index) =>
+    render: (text, record, index) =>
       searchedColumn === dataIndex ? (
         <Highlighter
           key={index}
@@ -103,18 +103,11 @@ export default function NewsMng() {
           textToHighlight={text ? text.toString() : ''}
         />
       ) : (
-        text
+        text || ''
       ),
   });
   const columns = [
-    {
-      title: 'Id',
-      dataIndex: 'id',
-      key: 'id',
-      width: '5%',
-      sorter: (a, b) => a.id - b.id,
-      sortDirections: ['descend', 'ascend'],
-    },
+    
     {
       title: 'Title',
       dataIndex: 'title',
@@ -123,17 +116,24 @@ export default function NewsMng() {
       ...getColumnSearchProps('title'),
       sorter: (a, b) => a.title - b.title,
       sortDirections: ['descend', 'ascend'],
-      render: (text,index) => { return <p key={index} className='text-ellipsis overflow-hidden line-clamp-2'>{text.replace(/<[^>]+>/g, '')}</p>}
+      render: (text, record, index) => { 
+        return <p key={index} className='text-ellipsis overflow-hidden line-clamp-2'>
+          {text ? text.replace(/<[^>]+>/g, '') : ''}
+        </p>
+      }
     },
     {
       title: 'Content',
       dataIndex: 'content',
-      width:'40%',
+      width: '40%',
       key: 'content',
       ...getColumnSearchProps('content'),
       sortDirections: ['descend', 'ascend'],
-      render: (text,index) => { return <p key={index} className='text-ellipsis overflow-hidden line-clamp-2'>{text.replace(/<[^>]+>/g, '')}</p>}
-
+      render: (text, record, index) => { 
+        return <p key={index} className='text-ellipsis overflow-hidden line-clamp-2'>
+          {text ? text.replace(/<[^>]+>/g, '') : ''}
+        </p>
+      }
     },
     {
       title: 'Release Date',
@@ -146,7 +146,7 @@ export default function NewsMng() {
         return dayjs(item.dayCreateNew).format("DD-MM-YYYY")
       },
     },
-    
+
     {
       title: "Image",
       dataIndex: "image",
@@ -160,7 +160,7 @@ export default function NewsMng() {
             alt={data.image}
           />
         ) : (
-              <div>No Image</div>
+          <div>No Image</div>
           // <Avatar size={40} style={{ fontSize: "20px", display: "flex", justifyContent: "center", alignItems: "center", }} />
           // // icon={data.fullName.substr(0, 1)}
         );
@@ -171,7 +171,7 @@ export default function NewsMng() {
       width: '20%',
       render: (text, item) => {
         return <>
-          <Button key={1} href={`/admin/newsmng/edit/${item.id}`}  type="link" icon={<EditOutlined />} onClick={() => {
+          <Button key={1} href={`/admin/newsmng/edit/${item.id}`} type="link" icon={<EditOutlined />} onClick={() => {
           }}></Button>
           <Button key={2} type="link" danger icon={<DeleteOutlined />} onClick={() => {
             if (window.confirm('Do you want to delete News ' + item.id + '?')) {
